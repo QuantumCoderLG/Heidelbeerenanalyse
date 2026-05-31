@@ -91,6 +91,21 @@ Repository öffentlich stellen:
 5. `Public` wählen und Bestätigung abschließen.
 6. Ausgeloggt oder in privatem Browserfenster prüfen, ob README sichtbar ist.
 
+Alternative per Konsole: Fine-grained GitHub-Token für
+`QuantumCoderLG/Heidelbeerenanalyse` erzeugen. Repository-Berechtigungen:
+`Administration: Read and write`, `Contents: Read and write`.
+
+```bash
+mkdir -p ~/.config/github
+chmod 700 ~/.config/github
+printf '%s' 'PASTE_TOKEN_HERE' > ~/.config/github/token
+chmod 600 ~/.config/github/token
+
+cd /home/lando/Dokumente/berries2.0
+bash tools/github_publish.sh status
+bash tools/github_publish.sh public
+```
+
 ## 3. Zenodo-DOIs reservieren
 
 Dataset-Draft anlegen:
@@ -157,6 +172,28 @@ Keywords: blueberry, computer vision, instance segmentation, classification, foo
 
 Beschreibung aus `docs/DATASET_README.md` übernehmen. Dann `Save draft`,
 `Preview`, prüfen, `Publish` anklicken und bestätigen.
+
+Alternative per Konsole: Token mit Scopes `deposit:write` und
+`deposit:actions` erzeugen und geschützt speichern:
+
+```bash
+mkdir -p ~/.config/zenodo
+chmod 700 ~/.config/zenodo
+printf '%s' 'PASTE_TOKEN_HERE' > ~/.config/zenodo/token
+chmod 600 ~/.config/zenodo/token
+
+cd /home/lando/Dokumente/berries2.0
+bash tools/zenodo_drafts.sh status
+bash tools/zenodo_drafts.sh prepare
+bash tools/zenodo_drafts.sh status
+```
+
+`prepare` aktualisiert beide Drafts und lädt Dateien hoch. Veröffentlichung
+bleibt separater, bestätigungspflichtiger Schritt:
+
+```bash
+bash tools/zenodo_drafts.sh publish
+```
 
 ## 6. Zenodo-Software-/Model-Record veröffentlichen
 
@@ -227,6 +264,13 @@ SHA256SUMS-software.txt
 
 6. `Publish release` anklicken.
 7. Zenodo-GitHub-Seite prüfen. Automatisch erzeugten Software-Record öffnen.
+
+Alternative per Konsole nach aktivierter Zenodo-GitHub-Verknüpfung:
+
+```bash
+cd /home/lando/Dokumente/berries2.0
+bash tools/github_publish.sh release
+```
 
 ## 9. Abschlussprüfung
 

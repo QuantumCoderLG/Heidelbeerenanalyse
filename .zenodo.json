@@ -1,0 +1,29 @@
+{
+  "title": "Heidelbeerenanalyse: Instance Segmentation and Multi-Stage Quality Classification",
+  "description": "Software for blueberry instance segmentation and multi-stage quality classification, including training pipelines and a Windows inference application.",
+  "creators": [
+    {
+      "name": "Garbe, Lando Maximilian"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "blueberry",
+    "computer vision",
+    "instance segmentation",
+    "classification",
+    "food quality"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.20479053",
+      "relation": "isSupplementedBy",
+      "resource_type": "dataset"
+    },
+    {
+      "identifier": "10.5281/zenodo.20479124",
+      "relation": "isSupplementedBy",
+      "resource_type": "software"
+    }
+  ]
+}

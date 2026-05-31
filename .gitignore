@@ -12,6 +12,8 @@ dist_windows_min/
 Thresholds.json
 zenodo_upload/
 github_upload/
+.zenodo-token
+.github-token
 
 # Large model artifacts belong in Zenodo records or GitHub release assets.
 Kanditaten/
