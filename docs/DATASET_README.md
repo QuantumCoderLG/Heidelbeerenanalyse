@@ -34,8 +34,8 @@ requirements.
 
 ## License and citation
 
-Dataset license: `TODO: ADD DATASET LICENSE`
+Dataset license: `CC BY 4.0`
 
-Zenodo DOI: `TODO: ADD DATASET DOI AFTER DEPOSIT`
+Zenodo DOI: `10.5281/zenodo.20479053`
 
 Source code citation metadata lives in `CITATION.cff` in the GitHub repository.

@@ -234,5 +234,5 @@ Ausführliche Veröffentlichungsschritte stehen in
 
 Zenodo-Records:
 
-- Dataset DOI: `TODO: ADD DATASET DOI AFTER DEPOSIT`
-- Software/Model DOI: `TODO: ADD SOFTWARE DOI AFTER DEPOSIT`
+- Dataset DOI: `10.5281/zenodo.20479053`
+- Software/Model DOI: `10.5281/zenodo.20479124`
