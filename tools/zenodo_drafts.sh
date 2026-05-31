@@ -120,13 +120,40 @@ update_metadata() {
     "${ZENODO_API}/deposit/depositions/${id}" >/dev/null
 }
 
+prune_unexpected_files() {
+  local id="$1"
+  shift
+  local allowed_file_ids="|$(printf '%s|' "$@")"
+  local file_id filename
+  while IFS=$'\t' read -r file_id filename; do
+    [[ -n "${file_id}" ]] || continue
+    if [[ "${allowed_file_ids}" != *"|${filename}|"* ]]; then
+      echo "Deleting unexpected draft file ${filename}..."
+      api_json -X DELETE \
+        "${ZENODO_API}/deposit/depositions/${id}/files/${file_id}" >/dev/null
+    fi
+  done < <(
+    get_deposition "${id}" |
+      jq -r '.files[]? | [.id, (.filename // .key)] | @tsv'
+  )
+}
+
 upload_file() {
+  local id="$1"
+  shift
   local bucket="$1"
-  local file="$2"
+  shift
+  local file="$1"
   local path="${UPLOAD_DIR}/${file}"
   if [[ ! -f "${path}" ]]; then
     echo "Missing upload file: ${path}" >&2
     exit 3
+  fi
+  if get_deposition "${id}" |
+    jq -e --arg filename "${file}" '.files[]? | select((.filename // .key) == $filename)' \
+      >/dev/null; then
+    echo "Keeping existing draft file ${file}."
+    return
   fi
   echo "Uploading ${file}..."
   curl --fail --show-error --progress-bar \
@@ -141,10 +168,15 @@ prepare_dataset() {
   id="$(find_deposition_id "${DATASET_DOI}")"
   bucket="$(get_deposition "${id}" | jq -er '.links.bucket')"
   update_metadata "${id}" "$(dataset_metadata)"
-  upload_file "${bucket}" "blueberry-source-images-v1.0.0.zip"
-  upload_file "${bucket}" "blueberry-curated-crops-v1.0.0.zip"
-  upload_file "${bucket}" "SHA256SUMS-dataset.txt"
-  upload_file "${bucket}" "DATASET_README.md"
+  prune_unexpected_files "${id}" \
+    "blueberry-source-images-v1.0.0.zip" \
+    "blueberry-curated-crops-v1.0.0.zip" \
+    "SHA256SUMS-dataset.txt" \
+    "DATASET_README.md"
+  upload_file "${id}" "${bucket}" "blueberry-source-images-v1.0.0.zip"
+  upload_file "${id}" "${bucket}" "blueberry-curated-crops-v1.0.0.zip"
+  upload_file "${id}" "${bucket}" "SHA256SUMS-dataset.txt"
+  upload_file "${id}" "${bucket}" "DATASET_README.md"
 }
 
 prepare_software() {
@@ -152,11 +184,37 @@ prepare_software() {
   id="$(find_deposition_id "${SOFTWARE_DOI}")"
   bucket="$(get_deposition "${id}" | jq -er '.links.bucket')"
   update_metadata "${id}" "$(software_metadata)"
-  upload_file "${bucket}" "blueberry-models-v1.0.0.zip"
-  upload_file "${bucket}" "blueberry-research-results-v1.0.0.zip"
-  upload_file "${bucket}" "Heidelbeeren-Bewertung-App-v1.0.0.zip"
-  upload_file "${bucket}" "SHA256SUMS-software.txt"
-  upload_file "${bucket}" "UPLOAD_INSTRUCTIONS.md"
+  prune_unexpected_files "${id}" \
+    "blueberry-models-v1.0.0.zip" \
+    "blueberry-research-results-v1.0.0.zip" \
+    "Heidelbeeren-Bewertung-App-v1.0.0.zip" \
+    "SHA256SUMS-software.txt" \
+    "UPLOAD_INSTRUCTIONS.md"
+  upload_file "${id}" "${bucket}" "blueberry-models-v1.0.0.zip"
+  upload_file "${id}" "${bucket}" "blueberry-research-results-v1.0.0.zip"
+  upload_file "${id}" "${bucket}" "Heidelbeeren-Bewertung-App-v1.0.0.zip"
+  upload_file "${id}" "${bucket}" "SHA256SUMS-software.txt"
+  upload_file "${id}" "${bucket}" "UPLOAD_INSTRUCTIONS.md"
+}
+
+configure_drafts() {
+  local dataset_id software_id
+  dataset_id="$(find_deposition_id "${DATASET_DOI}")"
+  software_id="$(find_deposition_id "${SOFTWARE_DOI}")"
+  update_metadata "${dataset_id}" "$(dataset_metadata)"
+  prune_unexpected_files "${dataset_id}" \
+    "blueberry-source-images-v1.0.0.zip" \
+    "blueberry-curated-crops-v1.0.0.zip" \
+    "SHA256SUMS-dataset.txt" \
+    "DATASET_README.md"
+  update_metadata "${software_id}" "$(software_metadata)"
+  prune_unexpected_files "${software_id}" \
+    "blueberry-models-v1.0.0.zip" \
+    "blueberry-research-results-v1.0.0.zip" \
+    "Heidelbeeren-Bewertung-App-v1.0.0.zip" \
+    "SHA256SUMS-software.txt" \
+    "UPLOAD_INSTRUCTIONS.md"
+  echo "Configured both Zenodo drafts."
 }
 
 publish_one() {
@@ -171,6 +229,9 @@ case "${ACTION}" in
     print_status "dataset" "${DATASET_DOI}"
     echo
     print_status "software" "${SOFTWARE_DOI}"
+    ;;
+  configure)
+    configure_drafts
     ;;
   prepare)
     prepare_dataset
@@ -197,7 +258,7 @@ EOF
     echo "Published both Zenodo records."
     ;;
   *)
-    echo "Usage: bash tools/zenodo_drafts.sh [status|prepare|publish]" >&2
+    echo "Usage: bash tools/zenodo_drafts.sh [status|configure|prepare|publish]" >&2
     exit 2
     ;;
 esac
