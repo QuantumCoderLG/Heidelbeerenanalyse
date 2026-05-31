@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+type: software
+title: "Heidelbeer-Instanzsegmentierung und Qualitätsbewertung"
+version: "1.0.0"
+date-released: "2026-05-31"
+license: MIT
+authors:
+  - family-names: "Garbe"
+    given-names: "Lando Maximilian"
+repository-code: "https://github.com/QuantumCoderLG/Heidelbeerenanalyse"
+abstract: >-
+  Software for blueberry instance segmentation and multi-stage quality
+  classification, including training pipelines and a Windows inference app.

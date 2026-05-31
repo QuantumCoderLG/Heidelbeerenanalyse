@@ -1,0 +1,12 @@
+{
+  "source_checkpoint": "outputs/backbone_a/a4/fold_00/best.pt",
+  "epoch": 45,
+  "metric": 0.9591836734693876,
+  "backbone": "efficientnet_b1",
+  "in_channels": 4,
+  "img_size": [
+    384,
+    384
+  ],
+  "onnx": "/tmp/a4_classifier.onnx"
+}

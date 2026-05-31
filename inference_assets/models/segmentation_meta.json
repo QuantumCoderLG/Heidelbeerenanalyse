@@ -1,0 +1,13 @@
+{
+  "source_checkpoint": "Kanditaten/fold_1_best.pt",
+  "epoch": 73,
+  "score": 0.9788770228624344,
+  "threshold": 0.5,
+  "model": {
+    "name": "deeplabv3plus",
+    "output_stride": 8,
+    "aux_loss": false
+  },
+  "safetensors": "Kanditaten/converted/fold_1_best.safetensors",
+  "onnx": "Kanditaten/converted/fold_1_best.onnx"
+}

@@ -1,0 +1,22 @@
+numpy
+pillow
+opencv-python
+pandas
+pyarrow           # für Parquet-Exports (optional, wird automatisch im Code abgefangen)
+lxml              # optional: schnellere/robustere XML-Parsing-Engine
+shapely           # optional: falls du später Geometrie-Operationen erweitern willst
+pyyaml
+albumentations>=1.4.0
+tensorboard
+pytest
+
+# Baseline SAM 2.1 inference
+matplotlib>=3.8
+huggingface-hub>=0.24
+
+# Use CUDA 12.8 wheels for PyTorch (keeps PyPI as default index)
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.7.1+cu128
+torchvision==0.22.1+cu128
+torchaudio==2.7.1+cu128
+onnxruntime>=1.20.1

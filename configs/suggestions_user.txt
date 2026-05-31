@@ -1,0 +1,159 @@
+YELLOW11
+Nummer 4 = green
+Nummer 11 = green
+Nummer 13 = red
+Nummer 25 = red
+YELLOW12 
+Nummer 4 = green
+Nummer 13 = red
+Nummer 24 = green
+YELLOW19
+Nummer 1 = red
+Nummer 6 = red
+Nummer 22 = red
+Nummer 14 = green
+YELLOW13
+Nummer 5 = green
+Nummer 12 = red
+Nummer 15 = green
+Nummer 18 = red
+Nummer 21 = red
+YELLOW14
+Nummer 2 = red
+Nummer 7 = red
+Nummer 8 = green
+Nummer 14 = green
+Nummer 17 = red
+YELLOW16
+Nummer 10 = green
+Nummer 18 = green
+Nummer 23 = green
+YELLOW17
+Nummer 7 = red
+Nummer = green
+YELLOW110
+Nummer 6 = red
+Nummer 16 = red
+Nummer 5 = green
+YELLOW111
+Nummer 1 = green
+Nummer 13 = red
+Nummer 18 = Never
+Nummer 19 = green
+YELLOW 211
+Nummer 16 = never
+Nummer 23 = red
+YELLOW221
+Nummer 6 = green 
+Nummer 17 = red
+YELLOW231
+Nummer 14 = red
+Nummer 15 = red
+Nummer 16 = red
+Nummer 24 = red
+YELLOW 241
+Nummer 4 = red
+Nummer 8 = red
+Nummer 17 = Never
+YELLOW251
+Nummer 10 = green
+
+
+RED11
+Nummer 1 = yellow 
+Nummer 7 = green
+Nummer 22 = yellow 
+RED12 
+Nummer 15 = green 
+Nummer 23 = yellow
+RED13
+Nummer 2 = green
+Nummer 3 = green 
+Nummer 10 = green 
+Nummer 21 = yellow 
+RED14
+Nummer 3 = yellow 
+Nummer 9 = green
+Nummer 24 = green 
+RED15
+Nummer 2 = green
+Nummer 3 = green
+Nummer 23 = green
+RED16
+Nummer 8 = yellow 
+Nummer 16 = yellow
+RED17
+Nummer 2 = green
+Nummer 20 = Never
+Nummer 21 = Never
+Nummer 22 = Never
+Nummer 24 = Never
+Nummer 25 = Never
+RED211
+Nummer 17 = yellow
+RED221
+Nummer 18 = yellow
+
+ 
+NEVER12
+Nummer 11 = red 
+NEVER13
+Nummer 19 = red
+NEVER14
+Nummer 9 = red 
+Nummer 19 = red
+NEVER15
+Nummer 3 = red 
+Nummer 18 = red 
+NEVER16
+Nummer 24 = red
+NEVER17
+Nummer 17 = red
+NEVER211
+Nummer 11 = red
+Nummer 13 = red
+Nummer 25 = green
+
+
+GREEN11
+Nummer 25 = never
+GREEN13
+Nummer 9 = red
+GREEN14
+Nummer 11 = red
+GREEN15
+Nummer 12 = red
+GREEN16
+Nummer 18 = red
+Nummer 21 = red
+GREEN 17
+Nummer 20 = yellow
+Nummer 24 = yellow
+GREEN18
+Nummer 12 = red
+Nummer 16 = red
+GREEN 19
+Nummer 16 = red
+Nummer 21 = red
+GREEN211
+Nummer 4 = red 
+Nummer 10 = yellow 
+Nummer 18 = red
+Nummer 22 = yellow
+GREEN221
+Nummer 19 = yellow
+Nummer 20 = red 
+GREEN231
+Nummer 17 = yellow
+Nummer 19 = yellow
+Nummer 20 = red 
+GREEN241
+Nummer 2 = red 
+Nummer 11 = yellow 
+Nummer 19 = yellow 
+GREEN251
+Nummer 5 = yellow 
+Nummer 10 = yellow 
+Nummer 23 = red 
+Nummer 24 = yellow 
+Nummer 25 = red 

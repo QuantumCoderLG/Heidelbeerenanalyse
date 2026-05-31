@@ -1,0 +1,109 @@
+// Render examples:
+//   python tools/generate_windows_inference_flowchart.py
+//   dot -Tsvg docs/windows_gui_inference_flowchart.dot -o docs/windows_gui_inference_flowchart.svg
+//   dot -Gdpi=192 -Tpng docs/windows_gui_inference_flowchart.dot -o docs/windows_gui_inference_flowchart.png
+
+digraph WindowsGuiInferenceFlow {
+  graph [
+    rankdir=TB,
+    splines=ortho,
+    nodesep=0.45,
+    ranksep=0.65,
+    pad=0.25,
+    bgcolor="#F7F4EC",
+    fontname="Helvetica",
+    fontsize=18,
+    label="Windows GUI Inference Flow for One Full Image",
+    labelloc=t,
+    labeljust=c
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    color="#7A93A3",
+    fillcolor="#FFFFFF",
+    fontname="Helvetica",
+    fontsize=12,
+    margin="0.16,0.10"
+  ];
+
+  edge [
+    color="#4A6572",
+    penwidth=1.6,
+    arrowsize=0.8,
+    fontname="Helvetica",
+    fontsize=11
+  ];
+
+  start [shape=oval, fillcolor="#DFF3E8", color="#5D8A6F", label="Start"];
+
+  open_image [fillcolor="#E4F0F6", label="User opens\none full image"];
+  preview [label="GUI shows a preview\nof the full image"];
+  note_preview [
+    shape=note,
+    style="filled",
+    color="#C7B26A",
+    fillcolor="#FFF6D8",
+    label="No AI decision yet.\nInference starts only after\n\"Evaluate\" is clicked."
+  ];
+  click_evaluate [fillcolor="#DFF3E8", label="User clicks\n\"Evaluate\""];
+  load_models [fillcolor="#FFF6D8", label="App loads ONNX models\nand thresholds if needed"];
+  segment [fillcolor="#E4F0F6", label="Segmentation finds\nsingle berry candidates"];
+  instances_q [shape=diamond, style="filled", color="#7A93A3", fillcolor="#FFFFFF", label="Any instances?"];
+  loop_intro [fillcolor="#EEF7FB", label="For each detected berry:\ncreate crop + berry mask"];
+
+  berry_q [shape=diamond, style="filled", color="#7A93A3", fillcolor="#FFFFFF", label="A1: Berry?"];
+  unknown [fillcolor="#D9DEE3", color="#6A747D", label="Label: Unknown\n(not a berry / unclear object)"];
+
+  reject_q [shape=diamond, style="filled", color="#7A93A3", fillcolor="#FFFFFF", label="A2: Never?"];
+  never [fillcolor="#2B2F33", color="#2B2F33", fontcolor="#FFFFFF", label="Label: Never"];
+
+  red_q [shape=diamond, style="filled", color="#7A93A3", fillcolor="#FFFFFF", label="A3: Red?"];
+  red [fillcolor="#FCE1E0", color="#C75A58", label="Label: Red"];
+
+  green_q [shape=diamond, style="filled", color="#7A93A3", fillcolor="#FFFFFF", label="A4: Green?"];
+  yellow_direct [fillcolor="#FFF2B9", color="#C7A522", label="Label: Yellow"];
+
+  classical_q [shape=diamond, style="filled", color="#7A93A3", fillcolor="#FFFFFF", label="Classical override:\nsize + shape OK?"];
+  green [fillcolor="#DDF2D9", color="#4E9A51", label="Label: Green"];
+  yellow_override [fillcolor="#FFF2B9", color="#C7A522", label="Label: Yellow\n(classical rule override)"];
+
+  combine [fillcolor="#FFFFFF", label="Combine all berry labels\non the full image"];
+  final_output [fillcolor="#E4F0F6", label="GUI shows the final overlay\nand saves *_bewertet.png"];
+
+  start -> open_image;
+  open_image -> preview;
+  preview -> note_preview [arrowhead=none, color="#B08A28"];
+  preview -> click_evaluate;
+  click_evaluate -> load_models;
+  load_models -> segment;
+  segment -> instances_q;
+  instances_q -> loop_intro [label="Yes"];
+  instances_q -> final_output [label="No"];
+  loop_intro -> berry_q;
+
+  berry_q -> unknown [label="No"];
+  berry_q -> reject_q [label="Yes"];
+
+  reject_q -> never [label="Yes"];
+  reject_q -> red_q [label="No"];
+
+  red_q -> red [label="Yes"];
+  red_q -> green_q [label="No"];
+
+  green_q -> yellow_direct [label="No"];
+  green_q -> classical_q [label="Yes"];
+
+  classical_q -> green [label="Yes"];
+  classical_q -> yellow_override [label="No"];
+
+  unknown -> combine;
+  never -> combine;
+  red -> combine;
+  yellow_direct -> combine;
+  yellow_override -> combine;
+  green -> combine;
+
+  combine -> final_output;
+}

@@ -1,0 +1,104 @@
+seed: 1337
+
+experiment:
+  name: backbone_a3
+  task: a3
+  fold_id: 0
+  folds: 5
+  output_root: outputs/backbone_a
+
+data:
+  metadata_dir: data/instance_crops/metadata
+  crops_csv: crops.csv
+  notberry_csv: notberry.csv
+  # Use manual split files analogous to A2
+  split_mode: manual
+  manual_split_dir: data/instance_crops/splits/a3
+  mask_usage: auto           # auto-decide based on include_mask_channel
+  include_mask_channel: true # provide mask as extra channel for focus
+  input_size: [384, 384]
+  batch_size: 16             # EfficientNet-B5 is heavier; smaller batch
+  val_batch_size: 32
+  num_workers: 6
+  pin_memory: true
+  persistent_workers: true
+  use_weighted_sampler: false
+  augment:
+    enabled: true
+    # A3 focuses on colour cues; use colour‑centric augments
+    mode: color
+    prob: 0.9
+    hue: 0.02
+    sat: 0.15
+    val: 0.08
+    gamma: [0.9, 1.1]
+    brightness: 0.04
+  # A3-spezifisch: sanfte Farbnormalisierung + Zusatzkanäle
+  color_norm: gray_world
+  color_features: [redness, darkness, hsv]
+
+model:
+  name: efficientnet_b5
+  pretrained: true
+  dropout: 0.4
+
+optimizer:
+  name: adamw
+  lr: 0.00035
+  weight_decay: 0.01
+
+scheduler:
+  name: cosine
+  t_max: 60
+  eta_min: 1.0e-6
+
+loss:
+  name: bce
+  pos_weight: auto  # auto-compute from class counts
+
+training:
+  max_epochs: 60
+  patience: 15
+  min_delta: 0.0005
+  log_interval: 10
+  val_interval: 1
+  amp: true
+  channels_last: true
+  gradient_accumulation: 1
+  grad_clip_norm: 1.0
+  # Anfangs niedrigerer Recall‑Schwellwert, um best.pt zu speichern
+  min_recall: 0.90
+
+calibration:
+  enabled: true
+  method: temperature
+  fraction: 0.4
+  min_per_class: 1
+  mode: fold
+  global_temperature_path: null
+
+threshold:
+  enabled: true
+  grid_size: 201
+  # Etwas geringer, damit die Suche ein sinnvolles Threshold findet
+  min_recall_positive: 0.85
+  min_value: 0.001
+  max_value: 0.99
+  # Vermeide extrem niedrigen Fallback, der zu vielen FP führt
+  fallback_threshold: 0.20
+  abstain_margin: 0.02
+  cost:
+    tp: 0.0
+    tn: 0.0
+    fp: 1.0
+    fn: 10.0
+  # Wenn Fallback greifen würde, nutze stattdessen den "raw_threshold",
+  # sofern F1 besser ist und Recall nicht unter diese Untergrenze fällt.
+  fallback_recall_floor: 0.85
+
+logging:
+  tensorboard: false
+  csv_log: outputs/backbone_a/training_log.csv
+  metrics_csv: outputs/backbone_a/metrics.csv
+  predictions_dir: outputs/backbone_a/predictions
+  log_level: INFO

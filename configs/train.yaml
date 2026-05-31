@@ -1,0 +1,124 @@
+seed: 1337
+
+data:
+  root: data/processed
+  train_split: train
+  val_split: val
+  train_size: [1024, 1024]
+  val_size: [1024, 1024]
+  keep_ratio: true
+  batch_size: 10
+  val_batch_size: 10
+  num_workers: 8
+  prefetch_factor: 6
+  pin_memory: true
+  persistent_workers: true
+  drop_last: true
+  cache_images: true
+
+model:
+  name: deeplabv3plus
+  backbone: resnet50
+  pretrained: true
+  output_stride: 8
+  aux_loss: false
+  freeze_blocks: [stem]
+  aspp_dilate: [6, 12, 18]
+  dropout: 0.1
+
+loss:
+  mode: dice_bce
+  dice_weight: 1.0
+  bce_weight: 1.0
+  smooth: 1.0e-5
+
+optimizer:
+  name: adam
+  lr: 0.0003
+  foreach: false
+  fused: true
+  param_groups:
+    backbone:
+      lr_scale: 0.1
+    classifier:
+      lr_scale: 1.0
+    default:
+      lr_scale: 1.0
+
+scheduler:
+  name: poly
+  power: 0.9
+
+train:
+  max_epochs: 120
+  gradient_accumulation_steps: 1
+  amp: true
+  clip_grad_norm: 1.0
+  val_interval: 3
+  checkpoint_dir: outputs/checkpoints
+  best_filename: best_iou.pt
+  last_filename: last.pt
+  resume_path: null
+  resume_strict: false
+  resume_optimizer: false
+  resume_scheduler: false
+  channels_last: true
+  torch_compile:
+    enabled: false
+    mode: reduce-overhead
+  backend:
+    cudnn_benchmark: true
+    allow_tf32: true
+    matmul_precision: high
+  lr_find:
+    enabled: true
+    min_lr: 1.0e-6
+    max_lr: 1.0e-2
+    num_iters: 80
+  early_stopping:
+    enabled: true
+    patience: 20
+    min_delta: 0.0005
+
+postproc:
+  threshold: 0.5
+  threshold_search:
+    enabled: false
+    min: 0.3
+    max: 0.8
+    num_steps: 11
+    metric: median_iou
+  morphology:
+    open_kernel: 3
+    close_kernel: 5
+    iterations: 1
+  min_area: 30
+  circularity:
+    enabled: true
+    min: 0.25
+  watershed:
+    enabled: true
+    peak_rel_threshold: 0.35
+    peak_min_distance: 1
+  count_guided:
+    enabled: false
+    target_count: 25
+    tolerance: 1
+    window: 0.2
+    steps: 9
+
+cv:
+  enabled: true
+  num_folds: 5
+  shuffle: true
+
+metrics:
+  count_target: 25
+  merge_iou_threshold: 0.1
+  miss_iou_threshold: 0.2
+
+logging:
+  tensorboard_dir: outputs/tensorboard
+  csv_log: outputs/logs/training.csv
+  metrics_json: outputs/logs/metrics.json
+  level: INFO

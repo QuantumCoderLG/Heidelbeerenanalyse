@@ -1,0 +1,245 @@
+{
+  "version": 1,
+  "models": {
+    "segmentation": {
+      "file": "models/segmentation.onnx",
+      "num_classes": 1,
+      "input_size": [
+        1024,
+        1024
+      ]
+    },
+    "a1": {
+      "file": "models/a1_classifier.onnx",
+      "in_channels": 4,
+      "input_size": [
+        320,
+        320
+      ]
+    },
+    "a2": {
+      "file": "models/a2_classifier.onnx",
+      "in_channels": 4,
+      "input_size": [
+        384,
+        384
+      ]
+    },
+    "a3": {
+      "file": "models/a3_classifier.onnx",
+      "in_channels": 4,
+      "input_size": [
+        320,
+        320
+      ]
+    },
+    "a4": {
+      "file": "models/a4_classifier.onnx",
+      "in_channels": 4,
+      "input_size": [
+        320,
+        320
+      ]
+    }
+  },
+  "preprocessing": {
+    "segmentation": {
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "target_hw": [
+        1024,
+        1024
+      ],
+      "keep_ratio": true
+    },
+    "a1": {
+      "input_size": [
+        320,
+        320
+      ],
+      "mask_usage": "auto",
+      "include_mask_channel": true,
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "a2": {
+      "input_size": [
+        320,
+        320
+      ],
+      "mask_usage": "auto",
+      "include_mask_channel": true,
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "a3": {
+      "input_size": [
+        320,
+        320
+      ],
+      "mask_usage": "auto",
+      "include_mask_channel": true,
+      "color_norm": "gray_world",
+      "color_features": [
+        "redness",
+        "darkness",
+        "hsv"
+      ],
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "a4": {
+      "input_size": [
+        320,
+        320
+      ],
+      "mask_usage": "auto",
+      "include_mask_channel": true,
+      "color_norm": "gray_world",
+      "color_features": [],
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    }
+  },
+  "thresholds": {
+    "labels": [
+      "unbekannt",
+      "Never",
+      "Red",
+      "Yellow",
+      "Green"
+    ],
+    "segmentation": {
+      "threshold": 0.5
+    },
+    "a1": {
+      "task": "notberry_vs_berry",
+      "threshold": 0.04,
+      "temperature": 0.41477230191230774,
+      "decision": "prob(notberry) >= threshold -> unbekannt"
+    },
+    "a2": {
+      "task": "never_vs_ok",
+      "threshold": 0.45,
+      "temperature": 3.316594123840332,
+      "decision": "prob(never) >= threshold -> Never"
+    },
+    "a3": {
+      "task": "red_vs_not_red",
+      "threshold": 0.3,
+      "temperature": 3.2830541133880615,
+      "decision": "prob(red) >= threshold -> Red; sonst Klassik"
+    },
+    "classical_rules": {
+      "method": "manual",
+      "rules": {
+        "deq": {
+          "name": "deq",
+          "kind": "max",
+          "low": null,
+          "high": 557.7557644812497,
+          "stats": {
+            "count": 375.0,
+            "mean": 504.19893882765473,
+            "std": 32.17554052791689,
+            "median": 502.939493532583,
+            "q01": 433.9020849393623,
+            "q05": 450.9984813093146,
+            "q95": 557.7557644812497,
+            "q99": 579.4439716391963
+          }
+        },
+        "circularity": {
+          "name": "circularity",
+          "kind": "min",
+          "low": 0.65,
+          "high": null,
+          "stats": {
+            "count": 375.0,
+            "mean": 0.6471150813211975,
+            "std": 0.007724768924285585,
+            "median": 0.6473283102984277,
+            "q01": 0.6283762976361044,
+            "q05": 0.6339548539163696,
+            "q95": 0.6597387485179532,
+            "q99": 0.6644390476326059
+          }
+        }
+      },
+      "override": {
+        "deq_min_for_yellow_override": 580.0,
+        "reason": "too_large"
+      }
+    },
+    "decision_flow": [
+      "Segmentierung -> Instanzen",
+      "A1: notberry? -> wenn ja: Label=unbekannt, sonst weiter",
+      "A2: never? -> wenn ja: Label=Never, sonst weiter",
+      "A3: red? -> wenn ja: Label=Red, sonst weiter",
+      "A4: green? -> wenn ja: Label=Green, sonst Label=Yellow"
+    ],
+    "a4": {
+      "task": "green_vs_yellow",
+      "threshold": 0.240675,
+      "temperature": 5.0,
+      "decision": "prob(green) >= threshold -> Green; sonst Yellow"
+    }
+  },
+  "postprocessing": {
+    "morphology": {
+      "open_kernel": 3,
+      "close_kernel": 5,
+      "iterations": 1
+    },
+    "min_area": 30,
+    "circularity": {
+      "enabled": true,
+      "min": 0.25
+    },
+    "watershed": {
+      "enabled": true,
+      "peak_rel_threshold": 0.35,
+      "peak_min_distance": 1
+    }
+  }
+}

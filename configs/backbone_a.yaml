@@ -1,0 +1,128 @@
+seed: 1337
+
+experiment:
+  name: backbone_a
+  task: a1  # override via CLI (--task a1|a2)
+  fold_id: 0
+  folds: 5
+  output_root: outputs/backbone_a
+
+data:
+  metadata_dir: data/instance_crops/metadata
+  crops_csv: crops.csv
+  notberry_csv: notberry.csv
+  # Daten-Split: "ratio" = stratifizierter Split nach Klassen (0/1)
+  split_mode: manual
+  manual_split_dir: data/instance_crops/splits/a2
+  union_metadata:
+    a2:
+      path: data/instance_crops/metadata/never_union_crops.jsonl
+      class: never
+      split: all
+      include_union_channel: false
+      guidance:
+        prob: 0.6
+        mode: blur        # blur | desaturate | darken
+        blur_sigma: 2.5
+        strength: 0.35
+        erode_px: 1
+    a3:
+      path: data/instance_crops/metadata/red_union_crops.jsonl
+      class: red
+      split: train
+      include_union_channel: false
+      guidance:
+        prob: 0.5
+        mode: blur
+        blur_sigma: 2.0
+        strength: 0.3
+        erode_px: 1
+  mask_usage: auto
+  include_mask_channel: true
+  input_size: [384, 384]
+  batch_size: 32
+  val_batch_size: 32
+  num_workers: 8
+  pin_memory: true
+  persistent_workers: true
+  use_weighted_sampler: true
+  augment:
+    enabled: true
+    # Für A3 bitte 'mode: color' setzen (siehe unten)
+    mode: texture
+    prob: 0.9
+    brightness: 0.08
+    contrast: 0.10
+    clahe_prob: 0.6
+    clahe_clip: [1.5, 3.0]
+    unsharp_prob: 0.7
+    unsharp_amount: [0.4, 0.9]
+    unsharp_sigma: [0.6, 1.2]
+    noise_prob: 0.4
+    noise_std: [0.0, 0.01]
+  # A3-spezifische Farbfeatures (werden nur bei task=a3 genutzt)
+  color_norm: gray_world
+  color_features: [redness, darkness, hsv]
+
+model:
+  name: efficientnet_b1
+  pretrained: true
+  dropout: 0.3
+  mask_weighted_pooling:
+    enabled: true
+
+optimizer:
+  name: adamw
+  lr: 0.0004
+  weight_decay: 0.02
+
+scheduler:
+  name: cosine
+  t_max: 60
+  eta_min: 1.0e-6
+
+loss:
+  name: bce
+  pos_weight: auto  # weiterhin für Statistik / Fallback verfügbar
+  pos_weight_multiplier: 2.0
+
+training:
+  max_epochs: 60
+  patience: 20
+  min_delta: 0.0005
+  log_interval: 10
+  val_interval: 1
+  amp: true
+  channels_last: true
+  gradient_accumulation: 1
+  grad_clip_norm: 1.0
+  min_recall: 0.75
+
+calibration:
+  enabled: true
+  method: temperature
+  fraction: 0.2
+  min_per_class: 1
+  mode: fold
+  global_temperature_path: null
+
+threshold:
+  enabled: true
+  grid_size: 801
+  min_recall_positive: 0.85
+  min_value: 0.02
+  max_value: 0.99
+  fallback_threshold: 0.2
+  abstain_margin: 0.02
+  cost:
+    tp: 0.0
+    tn: 0.0
+    fp: 1.0
+    fn: 10.0
+
+logging:
+  tensorboard: false
+  csv_log: outputs/backbone_a/training_log.csv
+  metrics_csv: outputs/backbone_a/metrics.csv
+  predictions_dir: outputs/backbone_a/predictions
+  log_level: INFO

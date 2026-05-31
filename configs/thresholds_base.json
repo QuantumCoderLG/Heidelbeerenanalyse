@@ -1,0 +1,53 @@
+{
+  "labels": [
+    "unbekannt",
+    "Never",
+    "Red",
+    "Yellow",
+    "Green"
+  ],
+  "decision_flow": [
+    "Segmentierung -> Instanzen",
+    "A1: notberry? -> wenn ja: Label=unbekannt, sonst weiter",
+    "A2: never? -> wenn ja: Label=Never, sonst weiter",
+    "A3: red? -> wenn ja: Label=Red, sonst weiter",
+    "A4: green? -> wenn ja: Label=Green, sonst Label=Yellow"
+    ],
+  "segmentation": {
+    "threshold": 0.5
+  },
+  "a1": {
+    "task": "notberry_vs_berry",
+    "threshold": 0.04,
+    "temperature": 0.41477230191230774,
+    "decision": "prob(notberry) >= threshold -> unbekannt"
+  },
+  "a2": {
+    "task": "never_vs_ok",
+    "threshold": 0.45,
+    "temperature": 3.316594123840332,
+    "decision": "prob(never) >= threshold -> Never"
+  },
+  "a3": {
+    "task": "red_vs_not_red",
+    "threshold": 0.2,
+    "temperature": 3.2830541133880615,
+    "decision": "prob(red) >= threshold -> Red; sonst Klassik"
+  },
+  "a4": {
+    "task": "green_vs_yellow",
+    "threshold": 0.24,
+    "temperature": 5.0,
+    "decision": "prob(green) >= threshold -> Green; sonst Yellow"
+  },
+  "classical_rules": {
+    "method": "override_only",
+    "rules": {},
+    "override": {
+      "deq_min_for_yellow_override": 580.0,
+      "circularity_min_for_yellow_override": 0.8,
+      "reason": "too_large",
+      "circularity_reason": "too_irregular"
+    }
+  }
+}
