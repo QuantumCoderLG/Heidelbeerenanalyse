@@ -4,6 +4,7 @@ Dieses Projekt enthält die komplette Pipeline für binäre Heidelbeer-Instanzse
 
 [![Dataset DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20479053.svg)](https://doi.org/10.5281/zenodo.20479053)
 [![Software DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20479124.svg)](https://doi.org/10.5281/zenodo.20479124)
+[![Source DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20484171.svg)](https://doi.org/10.5281/zenodo.20484171)
 
 ## Installation
 
@@ -239,3 +240,5 @@ Zenodo-Records:
 
 - Dataset DOI: [`10.5281/zenodo.20479053`](https://doi.org/10.5281/zenodo.20479053)
 - Software/Model DOI: [`10.5281/zenodo.20479124`](https://doi.org/10.5281/zenodo.20479124)
+- Source-code releases: [`10.5281/zenodo.20484171`](https://doi.org/10.5281/zenodo.20484171)
+- Source-code snapshot `v1.0.1`: [`10.5281/zenodo.20484172`](https://doi.org/10.5281/zenodo.20484172)
