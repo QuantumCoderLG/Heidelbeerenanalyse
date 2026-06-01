@@ -2,6 +2,9 @@
 
 Dieses Projekt enthält die komplette Pipeline für binäre Heidelbeer-Instanzsegmentierung mit DeepLabV3+ (ResNet-50-Backbone).
 
+[![Dataset DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20479053.svg)](https://doi.org/10.5281/zenodo.20479053)
+[![Software DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20479124.svg)](https://doi.org/10.5281/zenodo.20479124)
+
 ## Installation
 
 ```bash
@@ -234,5 +237,5 @@ Ausführliche Veröffentlichungsschritte stehen in
 
 Zenodo-Records:
 
-- Dataset DOI: `10.5281/zenodo.20479053`
-- Software/Model DOI: `10.5281/zenodo.20479124`
+- Dataset DOI: [`10.5281/zenodo.20479053`](https://doi.org/10.5281/zenodo.20479053)
+- Software/Model DOI: [`10.5281/zenodo.20479124`](https://doi.org/10.5281/zenodo.20479124)

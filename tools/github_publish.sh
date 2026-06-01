@@ -67,6 +67,30 @@ EOF
   repo_status
 }
 
+decorate_repo() {
+  api_json -X PATCH \
+    -H "Content-Type: application/json" \
+    --data '{
+      "description": "Blueberry instance segmentation and multi-stage quality classification with trained models and Windows inference app.",
+      "homepage": "https://doi.org/10.5281/zenodo.20479124"
+    }' \
+    "${GITHUB_API}/repos/${REPO}" >/dev/null
+  api_json -X PUT \
+    -H "Content-Type: application/json" \
+    --data '{
+      "names": [
+        "blueberry",
+        "computer-vision",
+        "instance-segmentation",
+        "classification",
+        "onnx",
+        "food-quality"
+      ]
+    }' \
+    "${GITHUB_API}/repos/${REPO}/topics" >/dev/null
+  echo "Updated GitHub repository description, homepage and topics."
+}
+
 ensure_release_tag() {
   if ! git -C "${STAGING}" rev-parse --verify refs/tags/v1.0.0 >/dev/null 2>&1; then
     git -C "${STAGING}" tag -a v1.0.0 -m "Heidelbeerenanalyse v1.0.0"
@@ -143,11 +167,14 @@ case "${ACTION}" in
   public)
     make_public
     ;;
+  decorate)
+    decorate_repo
+    ;;
   release)
     create_release
     ;;
   *)
-    echo "Usage: bash tools/github_publish.sh [status|public|release]" >&2
+    echo "Usage: bash tools/github_publish.sh [status|public|decorate|release]" >&2
     exit 2
     ;;
 esac
