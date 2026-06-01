@@ -6,7 +6,11 @@
       "name": "Garbe, Lando Maximilian"
     }
   ],
-  "license": "MIT",
+  "version": "1.0.0",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "mit",
+  "language": "eng",
   "keywords": [
     "blueberry",
     "computer vision",
@@ -16,13 +20,13 @@
   ],
   "related_identifiers": [
     {
-      "identifier": "10.5281/zenodo.20479053",
-      "relation": "isSupplementedBy",
+      "identifier": "https://doi.org/10.5281/zenodo.20479053",
+      "relation": "isSupplementTo",
       "resource_type": "dataset"
     },
     {
-      "identifier": "10.5281/zenodo.20479124",
-      "relation": "isSupplementedBy",
+      "identifier": "https://doi.org/10.5281/zenodo.20479124",
+      "relation": "isSupplementTo",
       "resource_type": "software"
     }
   ]
