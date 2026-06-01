@@ -92,14 +92,17 @@ decorate_repo() {
 }
 
 ensure_release_tag() {
-  if ! git -C "${STAGING}" rev-parse --verify refs/tags/v1.0.0 >/dev/null 2>&1; then
-    git -C "${STAGING}" tag -a v1.0.0 -m "Heidelbeerenanalyse v1.0.0"
+  local tag="$1"
+  if ! git -C "${STAGING}" rev-parse --verify "refs/tags/${tag}" >/dev/null 2>&1; then
+    git -C "${STAGING}" tag -a "${tag}" -m "Heidelbeerenanalyse ${tag}"
   fi
-  git -C "${STAGING}" push origin v1.0.0
+  git -C "${STAGING}" push origin "${tag}"
 }
 
 release_notes() {
-  cat <<'EOF'
+  local tag="$1"
+  if [[ "${tag}" == "v1.0.0" ]]; then
+    cat <<'EOF'
 Initial public research release.
 
 Includes source code, documentation and Windows inference application.
@@ -108,6 +111,17 @@ Large research datasets and model artifacts are published on Zenodo.
 Dataset DOI: https://doi.org/10.5281/zenodo.20479053
 Software/Model DOI: https://doi.org/10.5281/zenodo.20479124
 EOF
+  else
+    cat <<EOF
+Source-code archival release ${tag}.
+
+Includes finalized Zenodo metadata, DOI badges and console publication helpers.
+Windows application and trained model bundle remain available from release v1.0.0 and Zenodo.
+
+Dataset DOI: https://doi.org/10.5281/zenodo.20479053
+Software/Model DOI: https://doi.org/10.5281/zenodo.20479124
+EOF
+  fi
 }
 
 upload_asset() {
@@ -128,8 +142,9 @@ upload_asset() {
 }
 
 create_release() {
+  local tag="${1:-v1.0.0}"
   cat >&2 <<EOF
-WARNING: This creates public GitHub release v1.0.0 and uploads release assets.
+WARNING: This creates public GitHub release ${tag}.
 Type RELEASE to continue:
 EOF
   read -r confirmation
@@ -137,17 +152,17 @@ EOF
     echo "Cancelled." >&2
     exit 4
   }
-  ensure_release_tag
-  if api_json "${GITHUB_API}/repos/${REPO}/releases/tags/v1.0.0" >/dev/null 2>&1; then
-    echo "Release v1.0.0 already exists; refusing duplicate." >&2
+  ensure_release_tag "${tag}"
+  if api_json "${GITHUB_API}/repos/${REPO}/releases/tags/${tag}" >/dev/null 2>&1; then
+    echo "Release ${tag} already exists; refusing duplicate." >&2
     exit 5
   fi
   local response upload_url
   response="$(
     jq -n \
-      --arg tag "v1.0.0" \
-      --arg title "Heidelbeerenanalyse v1.0.0" \
-      --arg body "$(release_notes)" \
+      --arg tag "${tag}" \
+      --arg title "Heidelbeerenanalyse ${tag}" \
+      --arg body "$(release_notes "${tag}")" \
       '{tag_name:$tag,name:$title,body:$body,draft:false,prerelease:false}' |
       api_json -X POST \
         -H "Content-Type: application/json" \
@@ -155,8 +170,10 @@ EOF
         "${GITHUB_API}/repos/${REPO}/releases"
   )"
   upload_url="$(jq -er '.upload_url | sub("\\{\\?name,label\\}$"; "")' <<<"${response}")"
-  upload_asset "${upload_url}" "Heidelbeeren-Bewertung-App-v1.0.0.zip"
-  upload_asset "${upload_url}" "SHA256SUMS-software.txt"
+  if [[ "${tag}" == "v1.0.0" ]]; then
+    upload_asset "${upload_url}" "Heidelbeeren-Bewertung-App-v1.0.0.zip"
+    upload_asset "${upload_url}" "SHA256SUMS-software.txt"
+  fi
   jq -r '"release=\(.html_url)"' <<<"${response}"
 }
 
@@ -171,10 +188,10 @@ case "${ACTION}" in
     decorate_repo
     ;;
   release)
-    create_release
+    create_release "${2:-v1.0.0}"
     ;;
   *)
-    echo "Usage: bash tools/github_publish.sh [status|public|decorate|release]" >&2
+    echo "Usage: bash tools/github_publish.sh [status|public|decorate|release [TAG]]" >&2
     exit 2
     ;;
 esac

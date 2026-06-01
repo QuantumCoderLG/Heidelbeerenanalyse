@@ -269,7 +269,7 @@ Alternative per Konsole nach aktivierter Zenodo-GitHub-Verknüpfung:
 
 ```bash
 cd /home/lando/Dokumente/berries2.0
-bash tools/github_publish.sh release
+bash tools/github_publish.sh release v1.0.0
 ```
 
 ## 9. Abschlussprüfung
